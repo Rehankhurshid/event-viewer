@@ -13,23 +13,21 @@ const PORT = process.env.PORT || 3000;
 app.use('/api', createProxyMiddleware({
     target: 'https://api.webflow.com',
     changeOrigin: true,
-    // pathRewrite is not needed because app.use('/api') strips the prefix
+    pathRewrite: async function (path, req) {
+        // Force removal of /api prefix if it exists
+        return path.replace(/^\/api/, ''); 
+    },
     onProxyReq: (proxyReq, req, res) => {
         // Explicitly set Host header
         proxyReq.setHeader('Host', 'api.webflow.com');
+        proxyReq.setHeader('User-Agent', 'EventsViewer/1.0');
         
         // Remove forwarded headers
         proxyReq.removeHeader('x-forwarded-host');
         proxyReq.removeHeader('x-forwarded-proto');
         proxyReq.removeHeader('x-forwarded-for');
 
-        console.log('--- Proxy Request ---');
-        console.log(`Method: ${req.method}`);
-        console.log(`Original URL: ${req.originalUrl}`);
-        console.log(`Proxy Path: ${proxyReq.path}`);
-        console.log(`Target Host: api.webflow.com`);
-        console.log(`Auth Header Present: ${!!req.headers.authorization}`);
-        console.log('---------------------');
+        console.log(`[Proxy] ${req.method} ${req.originalUrl} -> https://api.webflow.com${proxyReq.path}`);
     },
     onError: (err, req, res) => {
         console.error('Proxy Error:', err);
@@ -39,6 +37,15 @@ app.use('/api', createProxyMiddleware({
 
 app.get('/health', (req, res) => {
     res.send('OK');
+});
+
+app.get('/debug-config', (req, res) => {
+    res.json({
+        port: PORT,
+        node_env: process.env.NODE_ENV,
+        dist_exists: 'Check logs', // We can't easily check fs here without importing fs, but static serve handles it
+        headers: req.headers
+    });
 });
 
 // Proxy for TinyPNG API
