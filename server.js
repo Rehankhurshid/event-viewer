@@ -13,25 +13,33 @@ const PORT = process.env.PORT || 3000;
 app.use('/api', createProxyMiddleware({
     target: 'https://api.webflow.com',
     changeOrigin: true,
-    pathRewrite: {
-        '^/api': '', // remove /api prefix
-    },
+    // pathRewrite is not needed because app.use('/api') strips the prefix
     onProxyReq: (proxyReq, req, res) => {
-        // Explicitly set Host header to ensure Webflow treats it as an API request
+        // Explicitly set Host header
         proxyReq.setHeader('Host', 'api.webflow.com');
         
-        // Remove forwarded headers that might confuse Webflow (causing it to serve 404 HTML)
+        // Remove forwarded headers
         proxyReq.removeHeader('x-forwarded-host');
         proxyReq.removeHeader('x-forwarded-proto');
         proxyReq.removeHeader('x-forwarded-for');
 
-        console.log(`[Proxy] ${req.method} ${req.url} -> https://api.webflow.com${proxyReq.path}`);
+        console.log('--- Proxy Request ---');
+        console.log(`Method: ${req.method}`);
+        console.log(`Original URL: ${req.originalUrl}`);
+        console.log(`Proxy Path: ${proxyReq.path}`);
+        console.log(`Target Host: api.webflow.com`);
+        console.log(`Auth Header Present: ${!!req.headers.authorization}`);
+        console.log('---------------------');
     },
     onError: (err, req, res) => {
         console.error('Proxy Error:', err);
         res.status(500).send('Proxy Error');
     }
 }));
+
+app.get('/health', (req, res) => {
+    res.send('OK');
+});
 
 // Proxy for TinyPNG API
 app.use('/tinify', createProxyMiddleware({
