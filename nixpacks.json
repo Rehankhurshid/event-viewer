@@ -1,0 +1,11 @@
+{
+    "nixpacks": {
+        "phases": {
+            "setup": {
+                "nixPkgs": [
+                    "nodejs-20_x"
+                ]
+            }
+        }
+    }
+}
