@@ -753,6 +753,14 @@ function EventCard({
                 </button>
             )}
             <div className="aspect-[2/1] bg-gray-100 relative">
+                {ratios[event.id]?.ratio && Math.abs(ratios[event.id].ratio - 2) <= 0.05 && (
+                    <div className="absolute top-2 left-2 z-20 bg-green-500 text-white px-2 py-1 rounded-md text-xs font-bold shadow-sm flex items-center gap-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                        DONE
+                    </div>
+                )}
                 {event.fieldData["header-image"]?.url ? (
                     <ImageWithRatio
                         src={event.fieldData["header-image"].url}
