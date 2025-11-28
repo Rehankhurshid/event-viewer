@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Staging Images</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-8">
+    <div class="max-w-7xl mx-auto">
+        <h1 class="text-3xl font-bold mb-8">Staging Images</h1>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            
+<div class="bg-white rounded-lg shadow overflow-hidden group relative">
+    <div class="aspect-[2/1] bg-gray-100 relative">
+        <img src="/images/RBI Monetary Policy Review - August 2025.webp" alt="RBI Monetary Policy Review - August 2025.webp" class="w-full h-full object-contain">
+    </div>
+    <div class="p-3 border-t bg-gray-50">
+        <p class="text-xs font-mono truncate text-gray-600" title="RBI Monetary Policy Review - August 2025.webp">RBI Monetary Policy Review - August 2025.webp</p>
+    </div>
+    <button onclick="copyUrl('/images/RBI Monetary Policy Review - August 2025.webp')" class="absolute top-2 right-2 bg-black text-white text-xs px-3 py-1.5 rounded opacity-0 group-hover:opacity-100 transition-opacity shadow-lg font-medium hover:bg-gray-800">
+        Copy Link
+    </button>
+</div>
+
+        </div>
+    </div>
+    <script>
+        function copyUrl(url) {
+            const fullUrl = window.location.origin + url;
+            navigator.clipboard.writeText(fullUrl);
+            alert('Copied: ' + fullUrl);
+        }
+    </script>
+</body>
+</html>
