@@ -17,8 +17,10 @@ app.use('/api', createProxyMiddleware({
         '^/api': '', // remove /api prefix
     },
     onProxyReq: (proxyReq, req, res) => {
-        // Ensure headers are forwarded correctly if needed
-        // console.log('Proxying request to:', req.url);
+        // Explicitly set Host header to ensure Webflow treats it as an API request
+        proxyReq.setHeader('Host', 'api.webflow.com');
+        
+        console.log(`[Proxy] ${req.method} ${req.url} -> https://api.webflow.com${proxyReq.path}`);
     },
     onError: (err, req, res) => {
         console.error('Proxy Error:', err);
