@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react"
+import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 import { fetchEvents, type EventItem } from "../lib/api"
 
@@ -86,7 +86,6 @@ export function MatchesPage() {
 function MatchCard({ match, liveEvent }: { match: MatchItem, liveEvent?: EventItem }) {
     const [isVisible, setIsVisible] = useState(false); // Default hidden until checked
     const [currentRatio, setCurrentRatio] = useState<number | null>(null);
-    const [checking, setChecking] = useState(true);
 
     // Use live URL if available, otherwise fallback to match JSON
     const imageUrl = liveEvent?.fieldData["header-image"]?.url || match.webflow_url;
@@ -94,7 +93,6 @@ function MatchCard({ match, liveEvent }: { match: MatchItem, liveEvent?: EventIt
 
     useEffect(() => {
         if (!imageUrl) {
-            setChecking(false);
             setIsVisible(true); // Show if no image (weird case)
             return;
         }
@@ -108,10 +106,8 @@ function MatchCard({ match, liveEvent }: { match: MatchItem, liveEvent?: EventIt
             // Hide if ratio is close to 2:1
             const isCorrect = Math.abs(ratio - 2) <= 0.05;
             setIsVisible(!isCorrect);
-            setChecking(false);
         };
         img.onerror = () => {
-            setChecking(false);
             setIsVisible(true); // Show on error
         };
     }, [imageUrl]);
