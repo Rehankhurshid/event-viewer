@@ -28,11 +28,24 @@ export function MatchesPage() {
                 const matchesData = await matchesRes.json();
                 setMatches(matchesData);
 
+                console.log("Fetched Events:", eventsData.length);
+                console.log("Sample Event ID:", eventsData[0]?.id);
+                console.log("Sample Match Webflow ID:", matchesData[0]?.webflow_id);
+
                 const map: Record<string, EventItem> = {};
                 eventsData.forEach(e => {
                     map[e.id] = e;
                 });
                 setEventsMap(map);
+
+                if (matchesData.length > 0 && eventsData.length > 0) {
+                    const firstMatchId = matchesData[0].webflow_id;
+                    console.log("Match found in map?", !!map[firstMatchId]);
+                    if (map[firstMatchId]) {
+                        console.log("Live URL:", map[firstMatchId].fieldData["header-image"]?.url);
+                        console.log("Match URL:", matchesData[0].webflow_url);
+                    }
+                }
 
             } catch (err) {
                 console.error("Failed to load data", err);
