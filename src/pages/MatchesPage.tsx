@@ -16,6 +16,7 @@ export function MatchesPage() {
     const [matches, setMatches] = useState<MatchItem[]>([])
     const [eventsMap, setEventsMap] = useState<Record<string, EventItem>>({})
     const [loading, setLoading] = useState(true)
+    const [visibleCount, setVisibleCount] = useState(0)
 
     useEffect(() => {
         const loadData = async () => {
@@ -27,25 +28,13 @@ export function MatchesPage() {
 
                 const matchesData = await matchesRes.json();
                 setMatches(matchesData);
-
-                console.log("Fetched Events:", eventsData.length);
-                console.log("Sample Event ID:", eventsData[0]?.id);
-                console.log("Sample Match Webflow ID:", matchesData[0]?.webflow_id);
+                setVisibleCount(matchesData.length); // Initialize with total
 
                 const map: Record<string, EventItem> = {};
                 eventsData.forEach(e => {
                     map[e.id] = e;
                 });
                 setEventsMap(map);
-
-                if (matchesData.length > 0 && eventsData.length > 0) {
-                    const firstMatchId = matchesData[0].webflow_id;
-                    console.log("Match found in map?", !!map[firstMatchId]);
-                    if (map[firstMatchId]) {
-                        console.log("Live URL:", map[firstMatchId].fieldData["header-image"]?.url);
-                        console.log("Match URL:", matchesData[0].webflow_url);
-                    }
-                }
 
             } catch (err) {
                 console.error("Failed to load data", err);
@@ -56,6 +45,10 @@ export function MatchesPage() {
 
         loadData();
     }, [])
+
+    const handleHide = () => {
+        setVisibleCount(prev => Math.max(0, prev - 1));
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -69,7 +62,7 @@ export function MatchesPage() {
                         </Link>
                         <h1 className="text-xl font-bold text-gray-900">Matches Review</h1>
                         <span className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">
-                            {matches.length} Potential Matches
+                            {visibleCount} Potential Matches
                         </span>
                     </div>
                 </div>
@@ -87,6 +80,7 @@ export function MatchesPage() {
                                 key={idx}
                                 match={match}
                                 liveEvent={eventsMap[match.webflow_id]}
+                                onHide={handleHide}
                             />
                         ))}
                     </div>
@@ -96,7 +90,7 @@ export function MatchesPage() {
     )
 }
 
-function MatchCard({ match, liveEvent }: { match: MatchItem, liveEvent?: EventItem }) {
+function MatchCard({ match, liveEvent, onHide }: { match: MatchItem, liveEvent?: EventItem, onHide: () => void }) {
     const [isVisible, setIsVisible] = useState(false); // Default hidden until checked
     const [currentRatio, setCurrentRatio] = useState<number | null>(null);
 
@@ -118,12 +112,15 @@ function MatchCard({ match, liveEvent }: { match: MatchItem, liveEvent?: EventIt
 
             // Hide if ratio is close to 2:1
             const isCorrect = Math.abs(ratio - 2) <= 0.05;
+            if (isCorrect) {
+                onHide();
+            }
             setIsVisible(!isCorrect);
         };
         img.onerror = () => {
             setIsVisible(true); // Show on error
         };
-    }, [imageUrl]);
+    }, [imageUrl]); // Warning: onHide dependency omitted to avoid re-runs
 
     if (!isVisible) return null;
 
