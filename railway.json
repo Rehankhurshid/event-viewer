@@ -8,5 +8,14 @@
         "startCommand": "npm start",
         "restartPolicyType": "ON_FAILURE",
         "restartPolicyMaxRetries": 10
+    },
+    "nixpacks": {
+        "phases": {
+            "setup": {
+                "nixPkgs": [
+                    "nodejs-20_x"
+                ]
+            }
+        }
     }
 }
