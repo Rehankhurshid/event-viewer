@@ -249,16 +249,16 @@ export function EventsPage() {
         }
     };
 
-    const handleToggleNoCanva = async (id: string, currentValue: boolean) => {
+    const handleToggleNoCanva = async (id: string, newValue: boolean) => {
         // Optimistic update
-        setEvents(prev => prev.map(e => e.id === id ? { ...e, fieldData: { ...e.fieldData, "no-canva-image": !currentValue } } : e));
+        setEvents(prev => prev.map(e => e.id === id ? { ...e, fieldData: { ...e.fieldData, "no-canva-image": newValue } } : e));
 
         try {
-            await updateEventSwitch(id, "no-canva-image", !currentValue);
+            await updateEventSwitch(id, "no-canva-image", newValue);
         } catch (error: any) {
             console.error("Failed to update switch", error);
             // Revert on failure
-            setEvents(prev => prev.map(e => e.id === id ? { ...e, fieldData: { ...e.fieldData, "no-canva-image": currentValue } } : e));
+            setEvents(prev => prev.map(e => e.id === id ? { ...e, fieldData: { ...e.fieldData, "no-canva-image": !newValue } } : e));
             alert(`Failed to update status: ${error.message}`);
         }
     };
